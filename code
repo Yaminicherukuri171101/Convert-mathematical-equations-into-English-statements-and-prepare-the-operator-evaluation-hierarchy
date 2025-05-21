@@ -1,0 +1,439 @@
+!pip install PyPDF2
+!pip install fpdf
+!pip install num2words
+import re
+import ast
+import os
+from PyPDF2 import PdfReader
+from fpdf import FPDF
+from num2words import num2words 
+# Extract text from pdf
+def extract_text_from_pdf(file_path):
+    text = ""
+    with open(file_path, 'rb') as f:
+        reader = PdfReader(f)
+        for page in reader.pages:
+            text += page.extract_text()
+    return text
+# Create File With Equations
+
+def create_equation_file(filename):
+    equations = [
+        "x = y + z",
+        "area = length * width",
+        "c = a + b * d",
+        "result = (x + y) * z",
+        "v = u + a * t",
+        "force = mass * acceleration",
+        "output = (a + b) / (c - d)",
+        "total = price * quantity + tax",
+        "f = (9/5) * c + 32",
+        "x = (a + b) ** 2",
+        "final = initial + change // 2",
+        "average = total / count",
+        "s = ut + 0.5 * a * t ** 2",
+        "z = x ** 2 + y ** 2",
+        "k = (m * v ** 2) / 2",
+        "perimeter = 2 * (l + w)",
+        "net = income - expenses",
+        "t = distance / speed",
+        "rate = work / time",
+        "remainder = x % y"
+        "x = y + z",
+        "a += b * 2",
+        "result = x >= y",
+        "is_valid = not flag",
+        "check = a and b or c",
+        "diff = x << 2",
+        "z = x >> y",
+        "equal = a == b",
+        "k = ~(n & m)",
+        "flag = True or False",
+        "x = not (a < b)",
+        "output = not not done",
+        "final = -(x + y)",
+        "positive = +val",
+        "bit = x ^ y",
+        "logic = (a or b) and not c",
+        "test = (a == b) or (c != d)",
+        "compare = x > y",
+        "z = (a >> 1) << 2",
+        "f = x & y | z"
+    ]
+    with open(filename, "w") as f:
+        for eq in equations:
+            f.write(eq + "\n")
+
+# Mapping the operator Names to the symbols
+
+# Simple language and formal language versions
+operator_names_simple = {
+    '**': 'raised to the power of',
+    '*': 'into',
+    '/': 'divided by',
+    '//': 'floor divided by',
+    '%': 'remainder of',
+    '+': 'plus',
+    '-': 'minus',
+    '=': 'is equal to',
+    '&': 'bitwise AND of',
+    '|': 'bitwise OR of',
+    '^': 'bitwise XOR of',
+    '~': 'bitwise NOT of',
+    '<<': 'left shifted by',
+    '>>': 'right shifted by',
+    '==': 'is equal to',
+    '!=': 'is not equal to',
+    '>': 'is greater than',
+    '<': 'is less than',
+    '>=': 'is greater than or equal to',
+    '<=': 'is less than or equal to',
+  
+}
+
+operator_names_formal = {
+    '**': 'raised to the power of',
+    '*': 'multiplied by',
+    '/': 'divided by',
+    '//': 'floor divided by',
+    '%': 'modulo',
+    '+': 'added to',
+    '-': 'subtracted from',
+    '=': 'is assigned to the value of',
+    '&': 'bitwise AND of',
+    '|': 'bitwise OR of',
+    '^': 'bitwise XOR of',
+    '~': 'bitwise NOT of',
+    '<<': 'left shifted by',
+    '>>': 'right shifted by',
+    '==': 'is equal to',
+    '!=': 'is not equal to',
+    '>': 'is greater than',
+    '<': 'is less than',
+    '>=': 'is greater than or equal to',
+    '<=': 'is less than or equal to',
+
+}
+
+precedence_order = {
+    '**': 1,
+    '*': 2, '/': 2, '//': 2, '%': 2,
+    '+': 3, '-': 3,
+    '<<': 4, '>>': 4,
+    '&': 5,
+    '^': 6,
+    '|': 7,
+    '==': 8, '!=': 8, '>': 8, '<': 8, '>=': 8, '<=': 8,
+    '=': 9
+}
+
+def extract_operators(expression):
+    # Match all multi-char and single-char operators
+    pattern = r'\*\*|//|==|!=|>=|<=|<<|>>|=|[\+\-\*/%&\|\^~><]'
+    found_ops = re.findall(pattern, expression)
+    
+    # Remove duplicates, sort by precedence
+    found_ops = list(set(found_ops))
+    found_ops.sort(key=lambda op: precedence_order.get(op, 99))
+    
+    return found_ops
+# Equation to English using AST
+
+def expression_to_english(expr, language_mode='simple', include_brackets=False):
+    # Choose operator names based on the language mode
+    expr = re.sub(r'(?<=\d)(?=[a-zA-Z])', '*', expr)
+    operator_names = operator_names_simple if language_mode == 'simple' else operator_names_formal
+
+    # Helper to convert number to words
+    def spell_number(value):
+        try:
+            return num2words(value).replace('-', ' ')
+        except:
+            return str(value)
+
+    def parse_node(node, operator_names=operator_names_formal, include_brackets=True):
+        if isinstance(node, ast.BinOp):
+            left = parse_node(node.left)
+            right = parse_node(node.right)
+            op_symbol = {
+                ast.Add: '+', ast.Sub: '-', ast.Mult: '*', ast.Div: '/',
+                ast.Pow: '**', ast.FloorDiv: '//', ast.Mod: '%',
+                ast.LShift: '<<', ast.RShift: '>>', ast.BitAnd: '&',
+                ast.BitOr: '|', ast.BitXor: '^'
+            }.get(type(node.op), '?')
+
+            op_text = operator_names.get(op_symbol, op_symbol)
+
+            if isinstance(node.left, ast.BinOp) or isinstance(node.right, ast.BinOp):
+                if op_symbol in ('*', '/'):
+                    op_text = 'whole ' + op_text
+
+            return f"({left} {op_text} {right})" if include_brackets else f"{left} {op_text} {right}"
+
+        elif isinstance(node, ast.Compare):
+            left = parse_node(node.left)
+            comparisons = []
+            for op, comparator in zip(node.ops, node.comparators):
+                op_symbol = {
+                    ast.Eq: '==', ast.NotEq: '!=', ast.Lt: '<', ast.LtE: '<=',
+                    ast.Gt: '>', ast.GtE: '>='
+                }.get(type(op), '?')
+                op_text = operator_names.get(op_symbol, op_symbol)
+                comparisons.append(f"{op_text} {parse_node(comparator)}")
+            return f"{left} {' and '.join(comparisons)}"
+
+        elif isinstance(node, ast.Name):
+            return node.id
+
+        elif isinstance(node, ast.Constant):
+            return spell_number(node.value)  # Your spell_number() function should convert digits to words
+
+        elif isinstance(node, ast.Assign):
+            target = parse_node(node.targets[0])
+            value = parse_node(node.value)
+            op_text = operator_names.get('=', '=')
+            return f"{target} {op_text} {value}"
+
+        elif isinstance(node, ast.Expr):
+            return parse_node(node.value)
+
+        elif isinstance(node, ast.UnaryOp):
+            if isinstance(node.op, ast.Invert):  # Bitwise NOT (~)
+                operand = parse_node(node.operand)
+                op_text = operator_names.get('~', '~')
+                return f"{op_text} {operand}"
+            else:
+                return f"{node.op} {parse_node(node.operand)}"
+
+        else:
+            return "?"
+    try:
+        tree = ast.parse(expr, mode='exec')
+        result = parse_node(tree.body[0])
+
+        if '(' in expr and '*' in expr or '/' in expr:
+            result = result.replace("whole multiplied by", "whole multiplied by")
+            result = result.replace("whole divided by", "whole divided by")
+
+        return result
+    except Exception as e:
+        return f"Error parsing expression: {e}"
+
+def get_operator_hierarchy(expression, language_mode='simple'):
+    used_ops = extract_operators(expression)
+    operator_names = operator_names_simple if language_mode == 'simple' else operator_names_formal
+    return "\n".join(f"{op} {operator_names.get(op, op)}" for op in used_ops)
+
+# Processing the Equations with above functions 
+
+def process_equation_lines(lines, language_mode, include_brackets):
+    output_lines = []
+    for i, line in enumerate(lines, start=1):
+        expression = line.strip()
+        if not expression: continue
+        output_lines.append(f"\nEquation {i}: {expression}")
+        output_lines.append("English Description:")
+        output_lines.append(expression_to_english(expression, language_mode, include_brackets))
+        output_lines.append("Operator Hierarchy:")
+        output_lines.append(get_operator_hierarchy(expression, language_mode))
+        output_lines.append("-" * 60)
+    return output_lines
+
+# Function to Write Output to the File
+def write_output(output_lines, input_type):
+    if input_type == 'manual':
+        print("\nOutput:")
+        for line in output_lines:
+            print(line)
+    else:
+        base, ext = os.path.splitext(input_type)
+        output_path = base + "_output" + ext
+
+        if ext == '.txt':
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(output_lines))
+        elif ext == '.pdf':
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_auto_page_break(auto=True, margin=15)
+            pdf.set_font("Arial", size=12)
+            for line in output_lines:
+                pdf.cell(200, 10, txt=line, ln=True)
+            pdf.output(output_path)
+        print(f"\nOutput written to: {output_path}")
+
+# Function to handle various inputs
+def process_input_source():
+    print("Choose input method:")
+    print("1. Use predefined .txt file (20 equations)")
+    print("2. Upload your own .txt file")
+    print("3. Upload a .pdf file")
+    print("4. Enter a single equation manually")
+
+    inp = input("Enter your choice: ").strip()
+
+    if inp == '1':
+        fname = "math_equations.txt"
+        create_equation_file(fname)
+        with open(fname, "r", encoding='utf-8') as f:
+            lines = f.readlines()
+        return lines, fname
+
+    elif inp == '2':
+        path = os.path.normpath(input("Enter path to your .txt file: ").strip().strip('"'))
+        with open(path, "r", encoding='utf-8') as f:
+            lines = f.readlines()
+        return lines, path
+
+    elif inp == '3':
+        path = os.path.normpath(input("Enter path to your .pdf file: ").strip().strip('"'))
+        text = extract_text_from_pdf(path)
+        lines = text.strip().split('\n')
+        return lines, path
+
+    elif inp == '4':
+        eq = input("Enter your equation: ").strip()
+        return [eq], 'manual'
+
+    else:
+        print("Invalid choice. Using default equations.")
+        fname = "math_equations.txt"
+        create_equation_file(fname)
+        with open(fname, "r", encoding='utf-8') as f:
+            lines = f.readlines()
+        return lines, fname
+# User Input
+# Language and Bracket Settings
+print("Choose language mode:")
+print("1. Simple (Everyday language)")
+print("2. Formal (Precise language)")
+language_mode = 'formal' if input("Enter your choice: ").strip() == '2' else 'simple'
+
+print("\nDo you want to include brackets in the English description?")
+include_brackets = input("Enter 1 for Yes, 2 for No: ").strip() == '1'
+
+# Process input
+lines, input_type = process_input_source()
+output_lines = process_equation_lines(lines, language_mode, include_brackets)
+write_output(output_lines, input_type)
+
+# GUI implementation using TKinter
+import tkinter as tk
+from tkinter import filedialog, messagebox, simpledialog, scrolledtext, ttk
+import os
+
+def math_expression_gui():
+    def load_file(choice):
+        nonlocal selected_lines, input_source
+
+        try:
+            if choice == "Predefined .txt file":
+                fname = "math_equations.txt"
+                create_equation_file(fname)
+                with open(fname, "r", encoding='utf-8') as f:
+                    selected_lines = f.readlines()
+                input_source = fname
+                file_label_var.set(f"Loaded: {fname}")
+
+            elif choice == "Upload .txt file":
+                file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+                if file_path:
+                    with open(file_path, "r", encoding='utf-8') as f:
+                        selected_lines = f.readlines()
+                    input_source = file_path
+                    file_label_var.set(f"Loaded: {os.path.basename(file_path)}")
+
+            elif choice == "Upload .pdf file":
+                file_path = filedialog.askopenfilename(filetypes=[("PDF Files", "*.pdf")])
+                if file_path:
+                    text = extract_text_from_pdf(file_path)
+                    selected_lines = text.strip().split('\n')
+                    input_source = file_path
+                    file_label_var.set(f"Loaded: {os.path.basename(file_path)}")
+
+            elif choice == "Manual input":
+                eq = simpledialog.askstring("Manual Input", "Enter your equation:")
+                if eq:
+                    selected_lines = [eq]
+                    input_source = "manual"
+                    file_label_var.set(f"Manual input selected")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def process_and_show_output():
+        if not selected_lines:
+            messagebox.showwarning("No Input", "Please select or enter an equation first.")
+            return
+
+        lang_mode = "formal" if lang_var.get() == 2 else "simple"
+        include_br = bracket_var.get() == 1
+
+        output_lines = process_equation_lines(selected_lines, lang_mode, include_br)
+        output_text.config(state='normal')
+        output_text.delete("1.0", tk.END)
+        output_text.insert(tk.END, "\n".join(output_lines))
+        output_text.config(state='disabled')
+
+    window = tk.Tk()
+    window.title("📘 Math Expression to English Translator")
+    window.geometry("950x700")
+    window.configure(bg="#f2f4f8")
+
+    style = ttk.Style()
+    style.theme_use('clam')
+    style.configure("TLabel", font=("Segoe UI", 11))
+    style.configure("TButton", font=("Segoe UI", 10), padding=6)
+    style.configure("TRadiobutton", font=("Segoe UI", 10))
+
+    title = ttk.Label(window, text="📘 Math Expression to English Translator", font=("Segoe UI", 16, "bold"))
+    title.pack(pady=15)
+
+    # Input method section
+    input_frame = ttk.LabelFrame(window, text="➤ Select Input Method")
+    input_frame.pack(padx=20, pady=10, fill='x')
+
+    input_method_var = tk.StringVar()
+    input_method_menu = ttk.Combobox(input_frame, textvariable=input_method_var, state='readonly',
+                                     values=["Predefined .txt file", "Upload .txt file", "Upload .pdf file", "Manual input"])
+    input_method_menu.set("Select an option")
+    input_method_menu.pack(side='left', padx=20, pady=10)
+
+    ttk.Button(input_frame, text="Load Input", command=lambda: load_file(input_method_var.get())).pack(side='left', padx=10)
+
+    file_label_var = tk.StringVar()
+    file_label = ttk.Label(input_frame, textvariable=file_label_var)
+    file_label.pack(side='left', padx=10)
+
+    # Language mode
+    lang_frame = ttk.LabelFrame(window, text="➤ Select Language Mode")
+    lang_frame.pack(padx=20, pady=10, fill='x')
+
+    lang_var = tk.IntVar(value=1)
+    ttk.Radiobutton(lang_frame, text="Simple (Everyday)", variable=lang_var, value=1).pack(side='left', padx=20, pady=5)
+    ttk.Radiobutton(lang_frame, text="Formal (Precise)", variable=lang_var, value=2).pack(side='left', padx=20, pady=5)
+
+    # Brackets toggle
+    bracket_frame = ttk.LabelFrame(window, text="➤ Include Brackets in Output?")
+    bracket_frame.pack(padx=20, pady=10, fill='x')
+
+    bracket_var = tk.IntVar(value=2)
+    ttk.Radiobutton(bracket_frame, text="Yes", variable=bracket_var, value=1).pack(side='left', padx=20, pady=5)
+    ttk.Radiobutton(bracket_frame, text="No", variable=bracket_var, value=2).pack(side='left', padx=20, pady=5)
+
+    # Convert button
+    ttk.Button(window, text="🔁 Convert to English Description", command=process_and_show_output).pack(pady=10)
+
+    # Output area
+    output_frame = ttk.LabelFrame(window, text="📝 English Description Output")
+    output_frame.pack(padx=20, pady=15, fill='both', expand=True)
+
+    output_text = scrolledtext.ScrolledText(output_frame, font=("Consolas", 11), wrap='word', height=20)
+    output_text.pack(fill='both', expand=True, padx=10, pady=10)
+    output_text.config(state='disabled')
+
+    selected_lines = []
+    input_source = ""
+
+    window.mainloop()
+math_expression_gui()
+
