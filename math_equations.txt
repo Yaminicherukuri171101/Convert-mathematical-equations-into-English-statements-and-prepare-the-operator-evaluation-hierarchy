@@ -1,0 +1,39 @@
+x = y + z
+area = length * width
+c = a + b * d
+result = (x + y) * z
+v = u + a * t
+force = mass * acceleration
+output = (a + b) / (c - d)
+total = price * quantity + tax
+f = (9/5) * c + 32
+x = (a + b) ** 2
+final = initial + change // 2
+average = total / count
+s = ut + 0.5 * a * t ** 2
+z = x ** 2 + y ** 2
+k = (m * v ** 2) / 2
+perimeter = 2 * (l + w)
+net = income - expenses
+t = distance / speed
+rate = work / time
+remainder = x % yx = y + z
+a += b * 2
+result = x >= y
+is_valid = not flag
+check = a and b or c
+diff = x << 2
+z = x >> y
+equal = a == b
+k = ~(n & m)
+flag = True or False
+x = not (a < b)
+output = not not done
+final = -(x + y)
+positive = +val
+bit = x ^ y
+logic = (a or b) and not c
+test = (a == b) or (c != d)
+compare = x > y
+z = (a >> 1) << 2
+f = x & y | z

@@ -1,0 +1,330 @@
+
+Equation 1: x = y + z
+English Description:
+x is equal to y plus z
+Operator Hierarchy:
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 2: area = length * width
+English Description:
+area is equal to length into width
+Operator Hierarchy:
+* into
+= is equal to
+------------------------------------------------------------
+
+Equation 3: c = a + b * d
+English Description:
+c is equal to a plus b into d
+Operator Hierarchy:
+* into
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 4: result = (x + y) * z
+English Description:
+result is equal to x plus y whole into z
+Operator Hierarchy:
+* into
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 5: v = u + a * t
+English Description:
+v is equal to u plus a into t
+Operator Hierarchy:
+* into
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 6: force = mass * acceleration
+English Description:
+force is equal to mass into acceleration
+Operator Hierarchy:
+* into
+= is equal to
+------------------------------------------------------------
+
+Equation 7: output = (a + b) / (c - d)
+English Description:
+output is equal to a plus b whole divided by c minus d
+Operator Hierarchy:
+/ divided by
++ plus
+- minus
+= is equal to
+------------------------------------------------------------
+
+Equation 8: total = price * quantity + tax
+English Description:
+total is equal to price into quantity plus tax
+Operator Hierarchy:
+* into
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 9: f = (9/5) * c + 32
+English Description:
+f is equal to nine divided by five whole into c plus thirty two
+Operator Hierarchy:
+* into
+/ divided by
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 10: x = (a + b) ** 2
+English Description:
+x is equal to a plus b raised to the power of two
+Operator Hierarchy:
+** raised to the power of
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 11: final = initial + change // 2
+English Description:
+final is equal to initial plus change floor divided by two
+Operator Hierarchy:
+// floor divided by
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 12: average = total / count
+English Description:
+average is equal to total divided by count
+Operator Hierarchy:
+/ divided by
+= is equal to
+------------------------------------------------------------
+
+Equation 13: s = ut + 0.5 * a * t ** 2
+English Description:
+s is equal to ut plus zero point five into a whole into t raised to the power of two
+Operator Hierarchy:
+** raised to the power of
+* into
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 14: z = x ** 2 + y ** 2
+English Description:
+z is equal to x raised to the power of two plus y raised to the power of two
+Operator Hierarchy:
+** raised to the power of
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 15: k = (m * v ** 2) / 2
+English Description:
+k is equal to m whole into v raised to the power of two whole divided by two
+Operator Hierarchy:
+** raised to the power of
+* into
+/ divided by
+= is equal to
+------------------------------------------------------------
+
+Equation 16: perimeter = 2 * (l + w)
+English Description:
+perimeter is equal to two whole into l plus w
+Operator Hierarchy:
+* into
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 17: net = income - expenses
+English Description:
+net is equal to income minus expenses
+Operator Hierarchy:
+- minus
+= is equal to
+------------------------------------------------------------
+
+Equation 18: t = distance / speed
+English Description:
+t is equal to distance divided by speed
+Operator Hierarchy:
+/ divided by
+= is equal to
+------------------------------------------------------------
+
+Equation 19: rate = work / time
+English Description:
+rate is equal to work divided by time
+Operator Hierarchy:
+/ divided by
+= is equal to
+------------------------------------------------------------
+
+Equation 20: remainder = x % yx = y + z
+English Description:
+Error parsing expression: cannot assign to operator (<unknown>, line 1)
+Operator Hierarchy:
+% remainder of
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 21: a += b * 2
+English Description:
+?
+Operator Hierarchy:
+* into
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 22: result = x >= y
+English Description:
+result is equal to x is greater than or equal to y
+Operator Hierarchy:
+>= is greater than or equal to
+= is equal to
+------------------------------------------------------------
+
+Equation 23: is_valid = not flag
+English Description:
+is_valid is equal to <ast.Not object at 0x000001EE32F5F400> flag
+Operator Hierarchy:
+= is equal to
+------------------------------------------------------------
+
+Equation 24: check = a and b or c
+English Description:
+check is equal to ?
+Operator Hierarchy:
+= is equal to
+------------------------------------------------------------
+
+Equation 25: diff = x << 2
+English Description:
+diff is equal to x left shifted by two
+Operator Hierarchy:
+<< left shifted by
+= is equal to
+------------------------------------------------------------
+
+Equation 26: z = x >> y
+English Description:
+z is equal to x right shifted by y
+Operator Hierarchy:
+>> right shifted by
+= is equal to
+------------------------------------------------------------
+
+Equation 27: equal = a == b
+English Description:
+equal is equal to a is equal to b
+Operator Hierarchy:
+== is equal to
+= is equal to
+------------------------------------------------------------
+
+Equation 28: k = ~(n & m)
+English Description:
+k is equal to bitwise NOT of n bitwise AND of m
+Operator Hierarchy:
+& bitwise AND of
+= is equal to
+~ bitwise NOT of
+------------------------------------------------------------
+
+Equation 29: flag = True or False
+English Description:
+flag is equal to ?
+Operator Hierarchy:
+= is equal to
+------------------------------------------------------------
+
+Equation 30: x = not (a < b)
+English Description:
+x is equal to <ast.Not object at 0x000001EE32F5F400> a is less than b
+Operator Hierarchy:
+< is less than
+= is equal to
+------------------------------------------------------------
+
+Equation 31: output = not not done
+English Description:
+output is equal to <ast.Not object at 0x000001EE32F5F400> <ast.Not object at 0x000001EE32F5F400> done
+Operator Hierarchy:
+= is equal to
+------------------------------------------------------------
+
+Equation 32: final = -(x + y)
+English Description:
+final is equal to <ast.USub object at 0x000001EE32F5F4C0> x plus y
+Operator Hierarchy:
++ plus
+- minus
+= is equal to
+------------------------------------------------------------
+
+Equation 33: positive = +val
+English Description:
+positive is equal to <ast.UAdd object at 0x000001EE32F5F460> val
+Operator Hierarchy:
++ plus
+= is equal to
+------------------------------------------------------------
+
+Equation 34: bit = x ^ y
+English Description:
+bit is equal to x bitwise XOR of y
+Operator Hierarchy:
+^ bitwise XOR of
+= is equal to
+------------------------------------------------------------
+
+Equation 35: logic = (a or b) and not c
+English Description:
+logic is equal to ?
+Operator Hierarchy:
+= is equal to
+------------------------------------------------------------
+
+Equation 36: test = (a == b) or (c != d)
+English Description:
+test is equal to ?
+Operator Hierarchy:
+!= is not equal to
+== is equal to
+= is equal to
+------------------------------------------------------------
+
+Equation 37: compare = x > y
+English Description:
+compare is equal to x is greater than y
+Operator Hierarchy:
+> is greater than
+= is equal to
+------------------------------------------------------------
+
+Equation 38: z = (a >> 1) << 2
+English Description:
+z is equal to a right shifted by one left shifted by two
+Operator Hierarchy:
+<< left shifted by
+>> right shifted by
+= is equal to
+------------------------------------------------------------
+
+Equation 39: f = x & y | z
+English Description:
+f is equal to x bitwise AND of y bitwise OR of z
+Operator Hierarchy:
+& bitwise AND of
+| bitwise OR of
+= is equal to
+------------------------------------------------------------
